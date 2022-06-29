@@ -678,3 +678,50 @@ val r2 = regressionEvaluator2.setMetricName("r2").evaluate(expXgboostDF)
 println(s"RMSE: $rmse")
 println(s"R2: $r2")
 println("-"*100)
+
+// COMMAND ----------
+
+// MAGIC %md
+// MAGIC # Future Direction and Notes
+// MAGIC 
+// MAGIC Despite the conclusion of this project, there is plenty left to be potentially added and improved on. 
+// MAGIC 
+// MAGIC ## Data   
+// MAGIC 
+// MAGIC The data was provided by [Inside Airbnb][1]. Inside Airbnb is not endorsed or affiliated with Airbnb directly, making it third party data [^1]. Because of this, there are some shortcomings and assumptions made on the publicly compiled data from Airbnb's website. For example, location coordinates are not exact, Airbnb's public facing website data purposefully shows location coordinates (whether on the map or in the data) that are somewhere from 0-450 feet from the actual address.
+// MAGIC 
+// MAGIC I have not used nearly all of the [features][2] available in the data from Inside Airbnb. Features such as neighborhood_cleansed could be used in conjunction with location coordinates. In any city, we can imagine examples where listings in certain neighborhoods are able to command higher listing prices despite being potentially further from desired points of interest. For example, an Airbnb listing could be listed as in a desirable neighborhood and add a premium onto the listing price despite another listing being closer to downtown or other points of interest geographically, with just a different neighborhood (even though the two listings might be physically very close to each other).  
+// MAGIC 
+// MAGIC Other features such as availability could be used to factor in the popularity of the listing. The Inside Airbnb data provides features for availability_30, availability_60, availability_90, and availability_365 for the availability of the listing x days into the future.  
+// MAGIC 
+// MAGIC Another big feature that could significantly improve model perforamnce is amentities. Amentities is stored in json format in the Inside Airbnb data. Amentities could be handled in multiple ways (including one hot encoding). Potentially significant amentities such as AC, laundry, new appliances, pools and Wifi would likely have a non-negligable impact on the pricing of an Airbnb listing.  
+// MAGIC 
+// MAGIC Review information could also be gathered and processed to supplement Inside Airbnb's data. There could be value in processing listing reviews through sentiment analysis or another form of natural language processing. 
+// MAGIC 
+// MAGIC Lastly, more data could be gathered for modeling. Inside Airbnb's DC dataset includes just over 7,000 listings from the DMV area. I'm not sure how far into the suburbs and DC metro area the dataset goes. A dataset of approximately 7,000 listings is still somewhat small to build a very comprehensive model of the DMV Airbnb market. Additional scraping could be done of the surrounding DMV areas to create a more comprehensive dataset. 
+// MAGIC 
+// MAGIC ## Feature Engineering
+// MAGIC 
+// MAGIC There are plenty of potential avenues for additional feature engineering before modeling. Some basic feature engineering was done in this project using median based imputation for null values. More advanced imputation techniques could be used to ensure the new data is not too heavily skewed.  
+// MAGIC 
+// MAGIC Given the somewhat small sample size for the data, discretization techniques could also be used in order to generalize better during the modeling steps. For example, if we determined the review ratings range for the dataset, we could bin the scores into groups such as "highly reviewed", "moderately reviewed", and "lowly reviewed". Given the range, the "lowly reviewed" properties might not have necessarily the lowest possible review scores but it is relative to the market/dataset.  
+// MAGIC 
+// MAGIC For the XGBoost model, the target label was log transformed in order to compress the extreme values and relatively expand the smaller numbers. However, this is not the only variable transformation that could've been used. Futher exploratory analysis of the relationship of the features and target could determine a better data transformation to use, whether it be a different form of data scaling or another target label transformation. 
+// MAGIC 
+// MAGIC Feature creation could also be incorporated. Feature creation involves deriving new features from the existing ones. Feature creation can have a significant impact on the performance of a model if meaningful interaction features can be found. However, careful consideration should be used for any new interaction feature that it does not add to the data's noise. 
+// MAGIC 
+// MAGIC ## Hyperparameter Tuning 
+// MAGIC 
+// MAGIC As this was my first experience using Scala, no hyperparameter tuning was done. However, hyperparameter tuning could have a significant impact on the performance of the models. Spark does provide the `ParamGridBuilder` for hyperparameter tuning. In addition, cross validaiton could be used in conjunction to ensure the model does not overfit the training data. 
+// MAGIC 
+// MAGIC ## Modeling 
+// MAGIC 
+// MAGIC Only logistic regression and XGBoost models were trained for this project. Additional models should be considered. 
+// MAGIC 
+// MAGIC ## Deployment Options 
+// MAGIC 
+// MAGIC Depending on how the model is going to be used, multiple deployment options could be considered. If near real time predictions are needed, the model could be deployed as an endpoint onto a web server. If real time predictions are not needed, a batch processing option could be considered. 
+// MAGIC 
+// MAGIC [1]: http://insideairbnb.com/
+// MAGIC [2]: https://docs.google.com/spreadsheets/d/1iWCNJcSutYqpULSQHlNyGInUvHg2BoUGoNRIGa6Szc4/edit#gid=982310896
+// MAGIC [^1]: http://insideairbnb.com/data-assumptions/
